@@ -1,42 +1,46 @@
 body {
-  background-color: #fff0f5;
   font-family: Arial, sans-serif;
+  background: #fffafc;
+  color: #333;
+  text-align: center;
   padding: 20px;
-  color: #4b006e;
 }
 
-h1, h2 {
-  color: #c2185b;
+h1 {
+  color: #d94e8f;
 }
 
 form {
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
-input, button {
-  padding: 8px;
-  margin: 5px 0;
-  width: 100%;
-  max-width: 300px;
+input, textarea, button {
+  padding: 10px;
+  margin: 5px;
   border: 1px solid #ccc;
-  border-radius: 8px;
+  border-radius: 10px;
 }
 
 button {
-  background-color: #f48fb1;
-  color: white;
+  background-color: #ffc0cb;
   border: none;
   cursor: pointer;
 }
 
-img {
-  border-radius: 10px;
-  margin-right: 10px;
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
 }
 
-li {
-  list-style: none;
-  margin-bottom: 15px;
-  display: flex;
-  align-items: center;
+.product-card {
+  border: 2px solid #f5d1d1;
+  padding: 15px;
+  border-radius: 15px;
+  background: #fff0f6;
+}
+
+.product-card img {
+  width: 100%;
+  border-radius: 10px;
 }

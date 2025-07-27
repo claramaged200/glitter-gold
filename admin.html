@@ -7,26 +7,18 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>✨ Admin Panel - Glitter & Gold</h1>
+  <h1>Admin Panel - Glitter & Gold</h1>
 
   <form id="productForm">
     <input type="text" id="productName" placeholder="Product Name" required />
-    <input type="number" id="productPrice" placeholder="Price (EGP)" required />
-    <input type="url" id="productImage" placeholder="Image URL" required />
+    <input type="text" id="productPrice" placeholder="Price (EGP)" required />
+    <input type="text" id="productImage" placeholder="Image URL" required />
     <button type="submit">Add Product</button>
   </form>
 
-  <h2>📦 Products</h2>
+  <h2>Products</h2>
   <ul id="productList"></ul>
 
-  <!-- Firebase Setup -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCFfj86lbA6ObwFeN0ngQTtW-GWDg0tYnY",
-      authDomain: "glitterandgoldshop.firebaseapp.com",
-      projectId: "glitterandgoldshop",
-      storageBucket: "glitterandgoldshop.firebasestorage.app",
-      messagingSenderId: "880466186
+  <script type="module" src="admin.js"></script>
+</body>
+</html>
