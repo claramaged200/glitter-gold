@@ -1,24 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin - Glitter & Gold</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <h1>Admin Panel - Glitter & Gold</h1>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-  <form id="productForm">
-    <input type="text" id="productName" placeholder="Product Name" required />
-    <input type="text" id="productPrice" placeholder="Price (EGP)" required />
-    <input type="text" id="productImage" placeholder="Image URL" required />
-    <button type="submit">Add Product</button>
-  </form>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCFfj86lbA6ObwFeN0ngQTtW-GWDg0tYnY",
+    authDomain: "glitterandgoldshop.firebaseapp.com",
+    projectId: "glitterandgoldshop",
+    storageBucket: "glitterandgoldshop.appspot.com",
+    messagingSenderId: "880466186545",
+    appId: "1:880466186545:web:4fe7a55154989dfed16010",
+    measurementId: "G-SRT30JGMJF"
+  };
 
-  <h2>Products</h2>
-  <ul id="productList"></ul>
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-  <script type="module" src="admin.js"></script>
-</body>
-</html>
+  const form = document.getElementById("productForm");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("productName").value;
+    const price = document.getElementById("productPrice").value;
+    const image = document.getElementById("productImage").value;
+
+    try {
+      await addDoc(collection(db, "products"), {
+        name,
+        price,
+        image
+      });
+      alert("✅ Product added successfully!");
+      form.reset();
+    } catch (err) {
+      console.error("Error adding product:", err);
+      alert("❌ Failed to add product.");
+    }
+  });
+</script>
