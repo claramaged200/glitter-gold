@@ -1,39 +1,142 @@
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyCFfj86lbA6ObwFeN0ngQTtW-GWDg0tYnY",
-    authDomain: "glitterandgoldshop.firebaseapp.com",
-    projectId: "glitterandgoldshop",
-    storageBucket: "glitterandgoldshop.appspot.com",
-    messagingSenderId: "880466186545",
-    appId: "1:880466186545:web:4fe7a55154989dfed16010",
-    measurementId: "G-SRT30JGMJF"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  const form = document.getElementById("productForm");
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const name = document.getElementById("productName").value;
-    const price = document.getElementById("productPrice").value;
-    const image = document.getElementById("productImage").value;
-
-    try {
-      await addDoc(collection(db, "products"), {
-        name,
-        price,
-        image
-      });
-      alert("✅ Product added successfully!");
-      form.reset();
-    } catch (err) {
-      console.error("Error adding product:", err);
-      alert("❌ Failed to add product.");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin - Glitter & Gold</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff0f6;
+      color: #5a005a;
+      padding: 20px;
     }
-  });
-</script>
+
+    h1 {
+      text-align: center;
+      color: #d63384;
+    }
+
+    form {
+      background-color: #fff;
+      border: 2px solid #f3c3d3;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 400px;
+      margin: 0 auto;
+      box-shadow: 0 0 10px #f3c3d3;
+    }
+
+    input, button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ffd6e0;
+      border-radius: 5px;
+    }
+
+    button {
+      background-color: #ff66a3;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+    }
+
+    button:hover {
+      background-color: #d63384;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background-color: #ffe6f0;
+      margin: 10px auto;
+      padding: 10px;
+      border-radius: 8px;
+      max-width: 400px;
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+  <h1>Admin Panel - Glitter & Gold</h1>
+
+  <form id="productForm">
+    <input type="text" id="productName" placeholder="Product Name" required />
+    <input type="text" id="productPrice" placeholder="Price" required />
+    <input type="url" id="productImage" placeholder="Image URL" required />
+    <button type="submit">Add Product</button>
+  </form>
+
+  <h2>🛍 Products</h2>
+  <ul id="productList"></ul>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCFfj86lbA6ObwFeN0ngQTtW-GWDg0tYnY",
+      authDomain: "glitterandgoldshop.firebaseapp.com",
+      projectId: "glitterandgoldshop",
+      storageBucket: "glitterandgoldshop.appspot.com",
+      messagingSenderId: "880466186545",
+      appId: "1:880466186545:web:4fe7a55154989dfed16010",
+      measurementId: "G-SRT30JGMJF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const productForm = document.getElementById("productForm");
+    const productList = document.getElementById("productList");
+
+    async function loadProducts() {
+      productList.innerHTML = "";
+      const querySnapshot = await getDocs(collection(db, "products"));
+      querySnapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <div>
+            <strong>${data.name}</strong> - ${data.price} EGP
+            <br><img src="${data.image}" width="80" height="80">
+          </div>
+          <button onclick="deleteProduct('${docSnap.id}')">🗑 Delete</button>
+        `;
+        productList.appendChild(li);
+      });
+    }
+
+    window.deleteProduct = async (id) => {
+      await deleteDoc(doc(db, "products", id));
+      loadProducts();
+    };
+
+    productForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("productName").value;
+      const price = document.getElementById("productPrice").value;
+      const image = document.getElementById("productImage").value;
+
+      try {
+        await addDoc(collection(db, "products"), { name, price, image });
+        alert("✅ Product added!");
+        productForm.reset();
+        loadProducts();
+      } catch (error) {
+        alert("❌ Error adding product.");
+        console.error(error);
+      }
+    });
+
+    loadProducts();
+  </script>
+</body>
+</html>
