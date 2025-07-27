@@ -1,42 +1,33 @@
-const form = document.getElementById('product-form');
-const productList = document.getElementById('product-list');
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-let products = JSON.parse(localStorage.getItem('products')) || [];
+const firebaseConfig = {
+  apiKey: "AIzaSyCFfj86lbA6ObwFeN0ngQTtW-GWDg0tYnY",
+  authDomain: "glitterandgoldshop.firebaseapp.com",
+  projectId: "glitterandgoldshop",
+  storageBucket: "glitterandgoldshop.firebasestorage.app",
+  messagingSenderId: "880466186545",
+  appId: "1:880466186545:web:4fe7a55154989dfed16010",
+  measurementId: "G-SRT30JGMJF"
+};
 
-function showProducts() {
-  productList.innerHTML = '';
-  products.forEach((p, i) => {
-    const div = document.createElement('div');
-    div.className = 'product';
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Load and show products
+async function loadProducts() {
+  const productList = document.getElementById("product-list");
+  productList.innerHTML = "";
+  const querySnapshot = await getDocs(collection(db, "products"));
+  querySnapshot.forEach((docSnap) => {
+    const product = docSnap.data();
+    const div = document.createElement("div");
     div.innerHTML = `
-      <img src="${p.image}" alt="${p.name}">
-      <h3>${p.name}</h3>
-      <p>${p.description}</p>
-      <strong>${p.price} EGP</strong>
+      <img src="${product.image}" width="100">
+      <h3>${product.name}</h3>
+      <p>${product.price} EGP</p>
     `;
     productList.appendChild(div);
   });
 }
-
-form.addEventListener('submit', function (e) {
-  e.preventDefault();
-
-  const name = document.getElementById('name').value;
-  const desc = document.getElementById('description').value;
-  const price = document.getElementById('price').value;
-  const imageInput = document.getElementById('image');
-
-  const reader = new FileReader();
-  reader.onload = function () {
-    const imageURL = reader.result;
-
-    products.push({ name, description: desc, price, image: imageURL });
-    localStorage.setItem('products', JSON.stringify(products));
-    showProducts();
-    form.reset();
-  };
-
-  reader.readAsDataURL(imageInput.files[0]);
-});
-
-showProducts();
+loadProducts();
