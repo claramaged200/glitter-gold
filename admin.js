@@ -1,6 +1,5 @@
 // admin.js
 
-// Load products from localStorage
 let products = JSON.parse(localStorage.getItem('products')) || [];
 
 function saveProducts() {
@@ -30,18 +29,26 @@ function deleteProduct(index) {
   }
 }
 
-// Handle form submission
 document.getElementById('productForm').addEventListener('submit', function(e) {
   e.preventDefault();
 
   const name = document.getElementById('productName').value;
   const price = document.getElementById('productPrice').value;
-  const image = document.getElementById('productImage').value;
+  const fileInput = document.getElementById('productImage');
+  const file = fileInput.files[0];
 
-  products.push({ name, price, image });
-  saveProducts();
+  if (!file) return alert("Please select an image.");
 
-  this.reset();
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const image = event.target.result;
+
+    products.push({ name, price, image });
+    saveProducts();
+    document.getElementById('productForm').reset();
+  };
+
+  reader.readAsDataURL(file);
 });
 
 renderProducts();
