@@ -25,6 +25,8 @@ const productList = document.getElementById('productList');
 
 // Handle form submission
 form.addEventListener('submit', async (e) => {
+    console.log("Form submitted");
+
   e.preventDefault();
   const name = document.getElementById('productName').value;
   const price = document.getElementById('productPrice').value;
