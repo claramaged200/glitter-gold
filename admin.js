@@ -1,9 +1,9 @@
-// Import Firebase SDK modules from CDN
+// Import Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-// Firebase configuration
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyCFfj86lbA6ObwFeN0ngQTtW-GWDg0tYnY",
   authDomain: "glitterandgoldshop.firebaseapp.com",
@@ -14,68 +14,41 @@ const firebaseConfig = {
   measurementId: "G-SRT30JGMJF"
 };
 
-// Initialize Firebase
+// Init Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// Reference to HTML elements
-const form = document.getElementById('productForm');
-const productList = document.getElementById('productList');
-
 // Handle form submission
-form.addEventListener('submit', async (e) => {
-    console.log("Form submitted");
-
+document.getElementById("productForm").addEventListener("submit", async (e) => {
   e.preventDefault();
-  const name = document.getElementById('productName').value;
-  const price = document.getElementById('productPrice').value;
-  const imageFile = document.getElementById('productImage').files[0];
 
-  if (!imageFile) {
-    alert("Please select an image.");
+  const name = document.getElementById("productName").value;
+  const price = document.getElementById("productPrice").value;
+  const imageFile = document.getElementById("productImage").files[0];
+
+  if (!name || !price || !imageFile) {
+    alert("Please fill all fields");
     return;
   }
 
-  // Upload image to Firebase Storage
-  const imageRef = ref(storage, `products/${Date.now()}_${imageFile.name}`);
-  await uploadBytes(imageRef, imageFile);
-  const imageUrl = await getDownloadURL(imageRef);
+  try {
+    // Upload image to Firebase Storage
+    const imageRef = ref(storage, `images/${imageFile.name}`);
+    await uploadBytes(imageRef, imageFile);
+    const imageUrl = await getDownloadURL(imageRef);
 
-  // Add product data to Firestore
-  await addDoc(collection(db, "products"), {
-    name,
-    price,
-    imageUrl
-  });
+    // Save product to Firestore
+    await addDoc(collection(db, "products"), {
+      name,
+      price,
+      image: imageUrl
+    });
 
-  alert("Product added successfully!");
-  form.reset();
-  loadProducts(); // Refresh product list
+    alert("✅ Product added successfully!");
+    document.getElementById("productForm").reset();
+  } catch (err) {
+    console.error("Error:", err);
+    alert("❌ Failed to add product.");
+  }
 });
-
-// Load products from Firestore
-async function loadProducts() {
-  productList.innerHTML = '';
-  const querySnapshot = await getDocs(collection(db, "products"));
-  querySnapshot.forEach(docSnap => {
-    const product = docSnap.data();
-    const li = document.createElement('li');
-    li.innerHTML = `
-      <img src="${product.imageUrl}" alt="${product.name}" width="100" />
-      <strong>${product.name}</strong> - ${product.price} EGP
-      <button onclick="deleteProduct('${docSnap.id}')">Delete</button>
-    `;
-    productList.appendChild(li);
-  });
-}
-
-// Delete a product
-window.deleteProduct = async function(id) {
-  await deleteDoc(doc(db, "products", id));
-  alert("Product deleted");
-  loadProducts();
-};
-
-// Initial load
-loadProducts();

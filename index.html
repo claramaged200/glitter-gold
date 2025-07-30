@@ -1,15 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Glitter & Gold</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Glitter & Gold Shop</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #fffaf5;
+      text-align: center;
+    }
+    .product {
+      border: 1px solid #ddd;
+      margin: 20px;
+      padding: 10px;
+      display: inline-block;
+      width: 200px;
+    }
+    .product img {
+      width: 100%;
+      height: auto;
+    }
+  </style>
 </head>
 <body>
-  <h1>🌟 Glitter & Gold Shop</h1>
-  <div id="productList" class="product-grid"></div>
+  <h1>🛍️ Welcome to Glitter & Gold</h1>
+  <div id="productList"></div>
 
-  <script type="module" src="script.js"></script>
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCFfj86lbA6ObwFeN0ngQTtW-GWDg0tYnY",
+      authDomain: "glitterandgoldshop.firebaseapp.com",
+      projectId: "glitterandgoldshop",
+      storageBucket: "glitterandgoldshop.appspot.com",
+      messagingSenderId: "880466186545",
+      appId: "1:880466186545:web:4fe7a55154989dfed16010",
+      measurementId: "G-SRT30JGMJF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const productList = document.getElementById("productList");
+
+    async function loadProducts() {
+      const querySnapshot = await getDocs(collection(db, "products"));
+      querySnapshot.forEach((doc) => {
+        const product = doc.data();
+        const div = document.createElement("div");
+        div.classList.add("product");
+        div.innerHTML = `
+          <img src="${product.imageUrl}" alt="${product.name}">
+          <h3>${product.name}</h3>
+          <p>${product.price} EGP</p>
+        `;
+        productList.appendChild(div);
+      });
+    }
+
+    loadProducts();
+  </script>
 </body>
 </html>

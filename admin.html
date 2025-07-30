@@ -2,113 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Panel - Glitter & Gold</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #fff8f0;
-      color: #333;
-      max-width: 600px;
-      margin: 40px auto;
-      padding: 20px;
-      border: 2px solid #f0c674;
-      border-radius: 10px;
-    }
-
-    h1 {
-      text-align: center;
-      color: #c59d5f;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    input, button {
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-
-    button {
-      background-color: #c59d5f;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #a67c32;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Glitter & Gold</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Admin Panel</h1>
+  <h1>Admin Panel - Glitter & Gold</h1>
+
   <form id="productForm">
     <input type="text" id="productName" placeholder="Product Name" required />
-    <input type="text" id="productPrice" placeholder="Product Price" required />
+    <input type="text" id="productPrice" placeholder="Price" required />
     <input type="file" id="productImage" accept="image/*" required />
     <button type="submit">Add Product</button>
   </form>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
+  <h2>Products</h2>
+  <ul id="productList"></ul>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCFfj86lbA6ObwFeN0ngQTtW-GWDg0tYnY",
-      authDomain: "glitterandgoldshop.firebaseapp.com",
-      projectId: "glitterandgoldshop",
-      storageBucket: "glitterandgoldshop.appspot.com",
-      messagingSenderId: "880466186545",
-      appId: "1:880466186545:web:4fe7a55154989dfed16010",
-      measurementId: "G-SRT30JGMJF"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-
-    const productForm = document.getElementById("productForm");
-
-    productForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const name = document.getElementById("productName").value;
-      const price = document.getElementById("productPrice").value;
-      const imageFile = document.getElementById("productImage").files[0];
-
-      if (!imageFile) {
-        alert("Please choose an image.");
-        return;
-      }
-
-      try {
-        // Upload image to Firebase Storage
-        const imageRef = ref(storage, `product-images/${Date.now()}-${imageFile.name}`);
-        await uploadBytes(imageRef, imageFile);
-        const imageUrl = await getDownloadURL(imageRef);
-
-        // Save product to Firestore
-        await addDoc(collection(db, "products"), {
-          name,
-          price,
-          image: imageUrl,
-          createdAt: new Date()
-        });
-
-        alert("✅ Product added successfully!");
-        productForm.reset();
-      } catch (error) {
-        console.error("❌ Error adding product:", error);
-        alert("Something went wrong!");
-      }
-    });
-  </script>
+  <!-- ✅ LINK TO ADMIN.JS -->
+  <script type="module" src="admin.js"></script>
 </body>
 </html>
